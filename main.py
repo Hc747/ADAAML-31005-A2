@@ -137,6 +137,8 @@ class TerminalNode(Node):
 
 class DecisionTree(Model):
 
+    # __tree: Optional[DecisionTreeBuilder]
+
     def compile(self, *args, **kwargs):
         pass
 
@@ -163,9 +165,22 @@ class DecisionTreeBuilder(metaclass=abc.ABCMeta):
 
     @staticmethod
     def factory(implementation: str, **kwargs):
-        factories = {'id3': ID3DecisionTreeBuilder}
+        factories = {
+            'CART': CARTDecisionTreeBuilder,
+            'ID3': ID3DecisionTreeBuilder,
+            'C4.5': C45DecisionTreeBuilder
+        }
         factory = require(factories.get(implementation, default=None), implementation)
         return factory.__init__(**kwargs)
+
+
+class CARTDecisionTreeBuilder(DecisionTreeBuilder):
+
+    def build(self, x, y) -> DecisionTree:
+        pass
+
+    def purity(self, attribute, x, y):
+        pass
 
 
 class ID3DecisionTreeBuilder(DecisionTreeBuilder):
@@ -177,6 +192,15 @@ class ID3DecisionTreeBuilder(DecisionTreeBuilder):
 
     def build(self, x, y) -> DecisionTree:
         raise NotImplementedError('TODO: implement ID3DecisionTreeBuilder#build')
+
+
+class C45DecisionTreeBuilder(DecisionTreeBuilder):
+
+    def purity(self, attribute, x, y):
+        pass
+
+    def build(self, x, y) -> DecisionTree:
+        pass
 
 
 class Perceptron(Model):
