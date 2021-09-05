@@ -55,6 +55,31 @@ class Model(metaclass=abc.ABCMeta):
         pass
 
 
+class Pivot:
+
+    def __init__(self, description, predicate: lambda x: bool):
+        self.__description = require(description, 'description')
+        self.__predicate = require(predicate, 'predicate')
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def predicate(self):
+        return self.__predicate
+
+    def split(self, value) -> bool:
+        return self.predicate(value)
+
+    def gini_impurity(self, x, y) -> float:
+        vector = np.vectorize(lambda v: self.split(v))(x)
+        lower = vector[vector == True]
+        upper = vector[vector == False]
+        return 3.14
+        # p_true =
+
+
 class Node(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
@@ -67,17 +92,17 @@ class BranchNode(Node):
     __lower: Optional[Node]
     __upper: Optional[Node]
 
-    def __init__(self, pivot, lower: Optional[Node] = None, upper: Optional[Node] = None):
+    def __init__(self, pivot: Pivot, lower: Optional[Node] = None, upper: Optional[Node] = None):
         self.__pivot = require(pivot, 'pivot')
         self.__lower = lower
         self.__upper = upper
 
     def eval(self, value):
-        branch: Node = self.lower if value <= self.pivot else self.upper
+        branch: Node = self.lower if self.pivot.split(value) else self.upper
         return branch.eval(value)
 
     @property
-    def pivot(self):
+    def pivot(self) -> Pivot:
         return self.__pivot
 
     @property
@@ -132,8 +157,9 @@ class DecisionTreeBuilder(metaclass=abc.ABCMeta):
     def build(self, x, y) -> DecisionTree:
         pass
 
-    # @abc.abstractmethod
-    # def purity(self, attribute):
+    @abc.abstractmethod
+    def purity(self, attribute, x, y):
+        pass
 
     @staticmethod
     def factory(implementation: str, **kwargs):
@@ -143,6 +169,11 @@ class DecisionTreeBuilder(metaclass=abc.ABCMeta):
 
 
 class ID3DecisionTreeBuilder(DecisionTreeBuilder):
+
+    def purity(self, attribute, x, y):
+        # p_true = 105
+        # p_false = 0.25
+        pass
 
     def build(self, x, y) -> DecisionTree:
         raise NotImplementedError('TODO: implement ID3DecisionTreeBuilder#build')
