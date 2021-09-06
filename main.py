@@ -2,6 +2,7 @@ import abc
 from typing import Optional, TypeVar
 
 import numpy as np
+import pandas as pd
 from tqdm.auto import tqdm
 
 ITERATION_LIMIT: int = 1_000
@@ -18,6 +19,15 @@ training_x = np.array([ord(char) for char in CHARACTERS])
 training_y = np.array([assign_class(char) for char in CHARACTERS])
 testing_x = np.array([ord(char) for char in SAMPLE])
 testing_y = np.array([assign_class(char) for char in SAMPLE])
+
+
+def value_counts(y, normalise: bool = True):
+    return pd.Series(y).value_counts(normalize=normalise)
+
+
+def compute_entropy(y):
+    frequencies = np.array(value_counts(y, normalise=True))
+    return -(frequencies * np.log2(frequencies + 1e-6)).sum()
 
 
 def require(x, field: str):
