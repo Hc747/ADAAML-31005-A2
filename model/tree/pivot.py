@@ -23,5 +23,8 @@ class Pivot:
         feature = f'x[{attribute}] <= {probe}'
 
         def predicate(x):
-            return x[feature] <= probe
+            return x[attribute] <= probe
         return Pivot(feature=feature, predicate=predicate)
+
+    def __str__(self) -> str:
+        return self.feature

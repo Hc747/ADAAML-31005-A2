@@ -10,6 +10,10 @@ class Node(metaclass=abc.ABCMeta):
     def eval(self, value):
         raise NotImplementedError('Node#eval')
 
+    @abc.abstractmethod
+    def render(self, out, depth: int = 0):
+        pass
+
     @staticmethod
     def branch(pivot: Pivot, lower: Optional['Node'] = None, upper: Optional['Node'] = None) -> 'Node':
         return BranchNode(pivot=pivot, lower=lower, upper=upper)
@@ -53,6 +57,17 @@ class BranchNode(Node):
     def upper(self, value: Optional[Node]):
         self.__upper = value
 
+    def render(self, out, depth: int = 0):
+        padding = ('-' * depth) + '>'
+        out(f'({depth}) {padding} Branch')
+        out(f'({depth}) {padding} Pivot: {self.pivot}')
+        out(f'({depth}) {padding} Lower:')
+        if self.lower is not None:
+            self.lower.render(out, depth=depth + 1)
+        out(f'({depth}) {padding} Upper:')
+        if self.upper is not None:
+            self.upper.render(out, depth=depth + 1)
+
 
 class TerminalNode(Node):
 
@@ -66,3 +81,6 @@ class TerminalNode(Node):
     def value(self):
         return require(self.__value, 'value')
 
+    def render(self, out, depth: int = 0):
+        padding = ('-' * depth) + '>'
+        out(f'({depth}) {padding} Terminal: {self.value}')

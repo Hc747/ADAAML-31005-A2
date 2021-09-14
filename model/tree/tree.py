@@ -23,13 +23,8 @@ class DecisionTree(Model):
         self.__root = self.builder.build(x, y)
 
     def predict(self, x, *args, **kwargs):
-        tree = self.root
-        samples = x.shape[0]
-        predictions = np.zeros(samples)  # TODO: default prediction not ZEROs
-        for index in range(samples):
-            sample = x[index]
-            predictions[index] = tree.eval(sample)
-        return predictions
+        tree, samples = self.root, x.shape[0]
+        return np.asarray([tree.eval(x[index]) for index in range(samples)])
 
     @property
     def builder(self) -> DecisionTreeBuilder:
