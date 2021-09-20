@@ -9,6 +9,14 @@ def require(x: Optional[any], field: str):
     return x
 
 
+def default(x: Optional[any], otherwise: any) -> any:
+    return otherwise if x is None else x
+
+
+def is_numeric(x):
+    return x.dtype == int or x.dtype == float or x.dtype == bool
+
+
 # def value_counts(y, normalise: bool = True):
 #     return pd.Series(y).value_counts(normalize=normalise)
 #

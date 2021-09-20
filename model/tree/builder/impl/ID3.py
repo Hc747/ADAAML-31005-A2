@@ -63,6 +63,8 @@ class ID3DecisionTreeBuilder(DecisionTreeBuilder):
         for index in range(attributes):
             # TODO: handle continuous and categorical attributes
             attribute = x[:, index]  # array of all values at that index
+
+            print(f'attribute => {attribute}')
             # print(f'build')
             # print(f'index: {index}, attribute: {attribute}')
             probes = ID3DecisionTreeBuilder.create_probe_values(attribute.min(), attribute.max())
@@ -83,24 +85,22 @@ class ID3DecisionTreeBuilder(DecisionTreeBuilder):
         idx_lower = x[:, candidate.feature()] <= candidate.probe()
         idx_upper = x[:, candidate.feature()] > candidate.probe()
 
-        def build_index(indices):
+        def build_index(indices) -> Node:
             return self.build(x[indices], y[indices])
 
         return Node.branch(pivot, build_index(idx_lower), build_index(idx_upper))
 
     @staticmethod
     def measure_progress(y, attribute, target, criterion: str = 'entropy'):
-        total = DecisionTreeBuilder.compute_impurity(y, criterion=criterion)
-        idx_lower = attribute <= target
-        idx_upper = attribute > target
-        impurity_lower = DecisionTreeBuilder.compute_impurity(y[idx_lower], criterion=criterion)
-        impurity_upper = DecisionTreeBuilder.compute_impurity(y[idx_upper], criterion=criterion)
         size = len(y)
-        contribution_lower = np.count_nonzero(idx_lower) / size
-        contribution_upper = np.count_nonzero(idx_upper) / size
+        lte, gt = attribute <= target, attribute > target
+        total_e = DecisionTreeBuilder.compute_impurity(y, criterion=criterion)
+        lower_e = DecisionTreeBuilder.compute_impurity(y[lte], criterion=criterion)
+        upper_e = DecisionTreeBuilder.compute_impurity(y[gt], criterion=criterion)
+        lower_w = np.count_nonzero(lte) / size
+        upper_w = np.count_nonzero(gt) / size
 
-        # print(f"wsum", wl*hl + wg*hg)
-        return total - (contribution_lower * impurity_lower + contribution_upper * impurity_upper)
+        return total_e - (lower_w * lower_e + upper_w * upper_e)
 
     @staticmethod
     def compute_information_gain(samples, attribute, target) -> float:
@@ -150,8 +150,15 @@ class ID3DecisionTreeBuilder(DecisionTreeBuilder):
 if __name__ == '__main__':
     from model.tree.tree import DecisionTree
     [x, y] = dataset(return_X_y=True)
-    print('x', x)
-    print('y', y)
+    # x = np.array([
+    #     np.array([123, 'hello']),
+    #     np.array([324, 'hola']),
+    #     np.array([453, 'bonjour']),
+    #     np.array([345345, 'goodbye'])
+    # ])
+    # y = np.array(['greeting', 'greeting', 'greeting', 'farewell'])
+    print('x', x, x.shape, x.dtype)
+    print('y', y, y.shape, y.dtype)
     # builder: ID3DecisionTreeBuilder = ID3DecisionTreeBuilder()
     # print('builder', builder)
     # node: Node = builder.build(x, y)

@@ -23,8 +23,9 @@ class DecisionTree(Model):
         self.__root = self.builder.build(x, y)
 
     def predict(self, x, *args, **kwargs):
-        tree, samples = self.root, x.shape[0]
-        return np.asarray([tree.eval(x[index]) for index in range(samples)])
+        # cached to prevent expensive access or concurrent modification (... if python has concurrent modification)
+        tree = self.root
+        return np.asarray([tree.eval(sample) for sample in x])
 
     @property
     def builder(self) -> DecisionTreeBuilder:
