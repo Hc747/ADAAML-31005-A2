@@ -47,6 +47,7 @@ class PivotCandidate:
 
 class ID3DecisionTreeBuilder(DecisionTreeBuilder):
 
+    # TODO: handle categorical attributes...
     def build(self, x, y) -> Node:
         classes = np.unique(y)
         choices = len(classes)
