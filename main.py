@@ -1,3 +1,15 @@
+import random
+sid = 12962712 # YOUR STUDENT ID
+magic = 42      # NUMBER WILL BE ANNOUNCED AT 0:00 MONDAY 4 OCT 2021
+rand = sid ^ magic
+random.seed(sid * magic)
+p = [f'A1 Quiz-{m}, Question-{q}'
+     for q in range(1, 4)
+     for m in range(2, 11)]
+random.shuffle(p)
+print(p[:5])
+print(f'seed: {rand}')
+
 # import abc
 # import numpy as np
 # import pandas as pd
